@@ -1695,6 +1695,7 @@ section[id] {
 
 @media (max-width: 1120px) {
   .hero-grid-layout,
+  .manifesto-grid,
   .service-page-hero-grid,
   .blog-page-hero-grid,
   .service-overview-grid,
@@ -1731,8 +1732,12 @@ section[id] {
     --container: min(1320px, calc(100vw - 32px));
   }
 
+  section[id] {
+    scroll-margin-top: calc(var(--header-height) + 38px);
+  }
+
   main {
-    padding-top: calc(var(--header-height) + 0.5rem);
+    padding-top: calc(var(--header-height) + 0.9rem);
   }
 
   .header-inner {
@@ -1763,6 +1768,8 @@ section[id] {
     background: rgba(8, 10, 16, 0.92);
     backdrop-filter: blur(24px);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.24);
+    max-height: min(calc(100vh - 108px), 34rem);
+    overflow-y: auto;
     opacity: 0;
     visibility: hidden;
     transform: translateY(-8px);
@@ -1807,6 +1814,7 @@ section[id] {
   }
 
   .research-grid,
+  .team-grid,
   .contact-details,
   .build-grid,
   .engagement-grid,
@@ -1929,7 +1937,11 @@ section[id] {
   }
 
   .footer-wordmark {
-    font-size: clamp(4.2rem, 24vw, 7rem);
+    margin-top: 2rem;
+    padding: 0 8px;
+    font-size: clamp(3rem, 18vw, 5.4rem);
+    line-height: 0.9;
     -webkit-text-stroke-width: 0.8px;
+    opacity: 0.38;
   }
 }
