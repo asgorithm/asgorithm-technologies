@@ -1,0 +1,1767 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inside an LLM | Asgorithm Technologies</title>
+    <meta
+      name="description"
+      content="Inside an LLM by Asgorithm Technologies. Load a real browser model, inspect tokenization, embeddings, token relationships, and next-token probabilities."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles.css" />
+    <style>
+      .page-tool {
+        min-height: 100vh;
+      }
+
+      .page-tool main {
+        padding-top: 0;
+      }
+
+      .tool-hero,
+      .tool-experience,
+      .tool-notes {
+        position: relative;
+      }
+
+      .tool-hero {
+        min-height: 100svh;
+        padding: calc(var(--header-height) + 1.6rem) 0 4.5rem;
+        overflow: hidden;
+      }
+
+      .tool-hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(circle at 16% 22%, rgba(255, 155, 113, 0.16), transparent 26%),
+          radial-gradient(circle at 82% 18%, rgba(76, 48, 247, 0.22), transparent 32%),
+          linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0));
+        pointer-events: none;
+      }
+
+      .tool-hero-grid,
+      .tool-footer-inner {
+        width: var(--container);
+        margin: 0 auto;
+      }
+
+      .tool-hero-grid {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: minmax(0, 0.9fr) minmax(360px, 1.1fr);
+        gap: clamp(2rem, 4vw, 4.5rem);
+        align-items: start;
+      }
+
+      .tool-copy {
+        padding-top: clamp(1rem, 2vw, 1.75rem);
+      }
+
+      .tool-title {
+        max-width: 9ch;
+        font-size: clamp(3.5rem, 6.6vw, 7rem);
+        line-height: 0.92;
+        letter-spacing: -0.075em;
+      }
+
+      .tool-title em {
+        font-style: italic;
+        font-family: "Instrument Serif", serif;
+        color: rgba(255, 155, 113, 0.96);
+      }
+
+      .tool-subtitle {
+        max-width: 40rem;
+        margin-top: 1.2rem;
+        font-size: clamp(1.08rem, 1.55vw, 1.34rem);
+        line-height: 1.68;
+        color: var(--muted);
+      }
+
+      .tool-actions,
+      .tool-flow-strip,
+      .tool-stat-row,
+      .tool-meta-row,
+      .tool-input-row,
+      .tool-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .tool-actions,
+      .tool-stat-row {
+        margin-top: 2rem;
+      }
+
+      .tool-flow-strip {
+        width: var(--container);
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.9rem;
+        margin-top: 2rem;
+      }
+
+      .tool-stat-row span,
+      .tool-badge,
+      .tool-caption,
+      .tool-swatch-label {
+        font-size: 0.78rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .tool-chip {
+        display: inline-flex;
+        align-items: center;
+        min-height: 42px;
+        padding: 0.75rem 0.95rem;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.04);
+        color: rgba(246, 241, 234, 0.74);
+      }
+
+      .tool-flow-card {
+        min-width: 0;
+        padding: 1rem 1.05rem;
+        border-radius: 24px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
+          rgba(8, 10, 16, 0.34);
+        backdrop-filter: blur(18px);
+      }
+
+      .tool-flow-card strong {
+        display: block;
+        font-size: 0.78rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(246, 241, 234, 0.52);
+      }
+
+      .tool-flow-card p {
+        margin-top: 0.55rem;
+        font-size: 0.96rem;
+        line-height: 1.5;
+        color: rgba(246, 241, 234, 0.84);
+      }
+
+      .tool-summary-card,
+      .tool-panel,
+      .tool-console,
+      .tool-output,
+      .tool-token,
+      .tool-pred-bar,
+      .tool-sim-cell,
+      .tool-embed-cell {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03)),
+          rgba(8, 10, 16, 0.42);
+        backdrop-filter: blur(22px) saturate(145%);
+        box-shadow: var(--shadow-soft);
+      }
+
+      .tool-summary-card {
+        position: relative;
+        padding: 1.5rem;
+        border-radius: 34px;
+        overflow: hidden;
+      }
+
+      .tool-summary-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(circle at top right, rgba(117, 211, 255, 0.14), transparent 32%),
+          radial-gradient(circle at bottom left, rgba(76, 48, 247, 0.18), transparent 36%);
+        pointer-events: none;
+      }
+
+      .tool-summary-card > * {
+        position: relative;
+        z-index: 1;
+      }
+
+      .tool-meta-row {
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .tool-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.58rem 0.82rem;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(8, 10, 16, 0.42);
+        color: rgba(246, 241, 234, 0.62);
+      }
+
+      .tool-badge.is-live {
+        border-color: rgba(133, 255, 158, 0.3);
+        color: rgba(133, 255, 158, 0.92);
+      }
+
+      .tool-badge.is-loading {
+        border-color: rgba(117, 211, 255, 0.3);
+        color: rgba(117, 211, 255, 0.92);
+      }
+
+      .tool-summary-card h2,
+      .tool-panel h2 {
+        letter-spacing: -0.04em;
+      }
+
+      .tool-summary-card h2 {
+        margin-top: 1rem;
+        font-size: clamp(1.6rem, 2.2vw, 2.15rem);
+      }
+
+      .tool-summary-card p {
+        max-width: 30rem;
+        margin-top: 0.75rem;
+        color: var(--muted);
+        line-height: 1.68;
+      }
+
+      .tool-summary-signal {
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+        gap: 0.9rem;
+        margin-top: 1.25rem;
+      }
+
+      .tool-signal-panel,
+      .tool-signal-metric {
+        border-radius: 22px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(8, 10, 16, 0.34);
+      }
+
+      .tool-signal-panel {
+        padding: 1rem;
+      }
+
+      .tool-signal-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.55rem;
+      }
+
+      .tool-signal-cell {
+        border-radius: 16px;
+        min-height: 78px;
+        padding: 0.8rem;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
+          rgba(16, 20, 32, 0.65);
+      }
+
+      .tool-signal-cell span,
+      .tool-signal-metric span {
+        display: block;
+        font-size: 0.72rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: rgba(246, 241, 234, 0.48);
+      }
+
+      .tool-signal-cell strong {
+        display: block;
+        margin-top: 0.5rem;
+        font-size: 1rem;
+        line-height: 1.2;
+        color: rgba(246, 241, 234, 0.9);
+      }
+
+      .tool-signal-metrics {
+        display: grid;
+        gap: 0.7rem;
+      }
+
+      .tool-signal-metric {
+        padding: 1rem;
+      }
+
+      .tool-signal-metric strong {
+        display: block;
+        margin-top: 0.35rem;
+        font-size: clamp(1.4rem, 2vw, 1.9rem);
+        letter-spacing: -0.04em;
+      }
+
+      .tool-summary-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.8rem;
+        margin-top: 1.4rem;
+      }
+
+      .tool-summary-item {
+        padding: 1rem;
+        border-radius: 22px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(8, 10, 16, 0.36);
+      }
+
+      .tool-summary-item strong {
+        display: block;
+        font-size: 0.82rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: rgba(246, 241, 234, 0.58);
+      }
+
+      .tool-summary-item p {
+        margin-top: 0.5rem;
+        font-size: 0.98rem;
+        color: rgba(246, 241, 234, 0.86);
+        line-height: 1.55;
+      }
+
+      .tool-experience {
+        padding: 0 0 6rem;
+      }
+
+      .tool-experience-shell {
+        width: var(--container);
+        margin: 0 auto;
+        display: grid;
+        gap: 1.25rem;
+      }
+
+      .tool-experience-heading {
+        display: grid;
+        gap: 0.9rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .tool-experience-heading h2 {
+        max-width: 10ch;
+        font-size: clamp(2.8rem, 5vw, 5rem);
+        letter-spacing: -0.06em;
+        line-height: 0.94;
+      }
+
+      .tool-experience-heading p {
+        max-width: 40rem;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .tool-launch-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 1.25rem;
+        align-items: start;
+      }
+
+      .tool-panel {
+        padding: clamp(1.25rem, 2vw, 1.6rem);
+        border-radius: 30px;
+      }
+
+      .tool-stage {
+        display: block;
+      }
+
+      .tool-panel-heading {
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .tool-panel-heading h2 {
+        margin: 0;
+        font-size: clamp(1.55rem, 2.4vw, 2.2rem);
+      }
+
+      .tool-panel-heading p {
+        margin-top: 0.45rem;
+        color: var(--muted);
+        line-height: 1.66;
+        max-width: 42rem;
+      }
+
+      .tool-panel-body {
+        min-width: 0;
+      }
+
+      .tool-stage-copy {
+        position: static;
+        margin-bottom: 1.1rem;
+      }
+
+      #app[hidden],
+      #tool-stage-stack[hidden] {
+        display: none !important;
+      }
+
+      .tool-step {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 3rem;
+        height: 3rem;
+        padding: 0 0.8rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        font-size: 1rem;
+        font-weight: 600;
+        letter-spacing: -0.05em;
+      }
+
+      .tool-toolbar {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .tool-runtime-warning {
+        margin-bottom: 0.25rem;
+        border-color: rgba(255, 155, 113, 0.22);
+        background: rgba(255, 155, 113, 0.08);
+      }
+
+      .tool-runtime-warning strong {
+        color: rgba(255, 155, 113, 0.96);
+      }
+
+      .tool-select,
+      .tool-input,
+      .tool-range {
+        width: 100%;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(8, 10, 16, 0.52);
+        color: var(--text);
+        border-radius: 18px;
+      }
+
+      .tool-select,
+      .tool-input {
+        min-height: 56px;
+        padding: 0 1rem;
+        font-family: var(--display);
+        font-size: 1rem;
+      }
+
+      .tool-select:focus,
+      .tool-input:focus,
+      .tool-range:focus {
+        outline: none;
+        border-color: rgba(117, 211, 255, 0.44);
+      }
+
+      .tool-button {
+        appearance: none;
+        border: 0;
+        cursor: pointer;
+      }
+
+      .tool-button.is-ghost {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: var(--muted-strong);
+      }
+
+      .tool-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .tool-progress {
+        display: none;
+        height: 10px;
+        margin-top: 0.4rem;
+        overflow: hidden;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+      }
+
+      .tool-progress.is-visible {
+        display: block;
+      }
+
+      .tool-progress-bar {
+        height: 100%;
+        width: 0;
+        border-radius: inherit;
+        background: linear-gradient(135deg, rgba(76, 48, 247, 0.98), rgba(232, 72, 85, 0.9));
+        transition: width 220ms ease;
+      }
+
+      .tool-status {
+        font-size: 0.82rem;
+        letter-spacing: 0.02em;
+        color: rgba(246, 241, 234, 0.56);
+      }
+
+      .tool-status.is-error {
+        color: rgba(255, 155, 113, 0.96);
+      }
+
+      .tool-console {
+        padding: 1rem;
+        border-radius: 22px;
+      }
+
+      .tool-example-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        margin-top: 1rem;
+      }
+
+      .tool-example {
+        appearance: none;
+        padding: 0.72rem 0.9rem;
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: transparent;
+        color: rgba(246, 241, 234, 0.62);
+        font-size: 0.8rem;
+        letter-spacing: 0.02em;
+        cursor: pointer;
+      }
+
+      .tool-example:hover,
+      .tool-example:focus-visible {
+        border-color: rgba(117, 211, 255, 0.4);
+        color: rgba(117, 211, 255, 0.92);
+        outline: none;
+      }
+
+      .tool-output {
+        min-height: 88px;
+        padding: 1rem 1.1rem;
+        border-radius: 22px;
+        color: rgba(246, 241, 234, 0.88);
+        font-family: "SFMono-Regular", "Menlo", "Monaco", monospace;
+        font-size: 0.98rem;
+        line-height: 1.72;
+        white-space: pre-wrap;
+      }
+
+      .tool-output .is-new {
+        color: rgba(117, 211, 255, 0.96);
+      }
+
+      .tool-output .is-cursor {
+        color: rgba(246, 241, 234, 0.4);
+      }
+
+      .tool-output .is-error {
+        color: rgba(255, 155, 113, 0.96);
+      }
+
+      .tool-token-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.65rem;
+      }
+
+      .tool-token {
+        display: grid;
+        gap: 0.3rem;
+        padding: 0.75rem 0.8rem;
+        border-radius: 18px;
+      }
+
+      .tool-token-text,
+      .tool-pred-token,
+      .tool-temperature-value {
+        font-family: "SFMono-Regular", "Menlo", "Monaco", monospace;
+      }
+
+      .tool-token-text {
+        font-size: 0.98rem;
+        font-weight: 600;
+      }
+
+      .tool-token-space {
+        color: rgba(246, 241, 234, 0.36);
+      }
+
+      .tool-token-id {
+        font-size: 0.74rem;
+        letter-spacing: 0.06em;
+        color: rgba(246, 241, 234, 0.42);
+      }
+
+      .tool-note {
+        margin-top: 1rem;
+        padding: 1rem 1.05rem;
+        border-radius: 20px;
+        border: 1px solid rgba(117, 211, 255, 0.18);
+        background: rgba(117, 211, 255, 0.06);
+        color: rgba(246, 241, 234, 0.72);
+        font-size: 0.86rem;
+        letter-spacing: 0.01em;
+        line-height: 1.65;
+      }
+
+      .tool-note strong {
+        color: rgba(117, 211, 255, 0.92);
+      }
+
+      .tool-embed-grid {
+        display: grid;
+        gap: 0.7rem;
+      }
+
+      .tool-embed-row {
+        display: grid;
+        grid-template-columns: minmax(92px, 140px) minmax(0, 1fr);
+        gap: 0.9rem;
+        align-items: center;
+      }
+
+      .tool-dimension-label {
+        font-size: 0.78rem;
+        letter-spacing: 0.04em;
+        color: rgba(246, 241, 234, 0.56);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .tool-embed-cells {
+        display: grid;
+        grid-template-columns: repeat(48, minmax(0, 1fr));
+        gap: 2px;
+      }
+
+      .tool-embed-cell {
+        height: 22px;
+        min-width: 0;
+        border-radius: 3px;
+      }
+
+      .tool-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 1rem;
+        color: rgba(246, 241, 234, 0.56);
+      }
+
+      .tool-swatch-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .tool-swatch {
+        width: 14px;
+        height: 14px;
+        border-radius: 4px;
+      }
+
+      .tool-sim-wrap {
+        overflow-x: auto;
+      }
+
+      .tool-sim-grid {
+        display: inline-grid;
+        gap: 4px;
+      }
+
+      .tool-sim-axis {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.72rem;
+        letter-spacing: 0.04em;
+        color: rgba(246, 241, 234, 0.46);
+      }
+
+      .tool-sim-axis.is-row {
+        justify-content: flex-end;
+        padding-right: 0.45rem;
+      }
+
+      .tool-sim-cell {
+        width: 36px;
+        height: 36px;
+        border-radius: 4px;
+      }
+
+      .tool-predictions {
+        display: grid;
+        gap: 0.7rem;
+      }
+
+      .tool-pred-row {
+        display: grid;
+        grid-template-columns: minmax(84px, 140px) minmax(0, 1fr) 64px;
+        gap: 0.85rem;
+        align-items: center;
+      }
+
+      .tool-pred-token {
+        color: rgba(246, 241, 234, 0.78);
+        font-size: 0.94rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .tool-pred-row.is-top .tool-pred-token {
+        color: rgba(117, 211, 255, 0.96);
+        font-weight: 600;
+      }
+
+      .tool-pred-bar {
+        overflow: hidden;
+        height: 24px;
+        border-radius: 8px;
+      }
+
+      .tool-pred-bar-fill {
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(135deg, rgba(76, 48, 247, 0.98), rgba(117, 211, 255, 0.84));
+      }
+
+      .tool-pred-prob {
+        font-size: 0.76rem;
+        letter-spacing: 0.06em;
+        color: rgba(246, 241, 234, 0.56);
+        text-align: right;
+      }
+
+      .tool-controls {
+        align-items: center;
+        margin-top: 1rem;
+      }
+
+      .tool-controls label,
+      .tool-footnote {
+        color: rgba(246, 241, 234, 0.56);
+      }
+
+      .tool-range-wrap {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
+      }
+
+      .tool-range {
+        width: min(100%, 180px);
+        accent-color: #75d3ff;
+      }
+
+      .tool-notes {
+        padding: 0 0 5rem;
+      }
+
+      .tool-notes-grid {
+        width: var(--container);
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1rem;
+      }
+
+      .tool-footnote-card {
+        padding: 1.2rem;
+        border-radius: 26px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .tool-footnote-card h3 {
+        font-size: 1.15rem;
+        letter-spacing: -0.03em;
+      }
+
+      .tool-footnote-card p {
+        margin-top: 0.7rem;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      .tool-page-footer .site-footer {
+        padding-top: 1.5rem;
+      }
+
+      @media (max-width: 1120px) {
+        .tool-hero-grid,
+        .tool-notes-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .tool-summary-signal,
+        .tool-launch-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .tool-copy {
+          padding-top: 0;
+        }
+
+        .tool-summary-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 920px) {
+        .tool-hero {
+          padding-top: calc(var(--header-height) + 1.4rem);
+        }
+
+        .tool-pred-row {
+          grid-template-columns: minmax(68px, 108px) minmax(0, 1fr) 56px;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .tool-hero {
+          min-height: auto;
+          padding: calc(var(--header-height) + 1.15rem) 0 3.4rem;
+        }
+
+        .tool-panel,
+        .tool-summary-card {
+          border-radius: 26px;
+        }
+
+        .tool-flow-strip,
+        .tool-signal-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .tool-input-row,
+        .tool-controls,
+        .tool-meta-row,
+        .tool-panel-heading {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .tool-embed-row {
+          grid-template-columns: 1fr;
+        }
+
+        .tool-embed-cells {
+          grid-template-columns: repeat(24, minmax(0, 1fr));
+        }
+
+        .tool-pred-row {
+          grid-template-columns: 1fr;
+          gap: 0.45rem;
+        }
+
+        .tool-pred-prob {
+          text-align: left;
+        }
+      }
+    </style>
+  </head>
+  <body class="page-tool page-inside-llm">
+    <div class="site-shell">
+      <div class="ambient ambient-top" aria-hidden="true"></div>
+      <div class="ambient ambient-bottom" aria-hidden="true"></div>
+
+      <header class="site-header">
+        <div class="header-inner">
+          <a class="brand" href="../index.html#home" aria-label="Asgorithm Technologies home">
+            <img src="../public/logo.png" alt="Asgorithm Technologies" />
+          </a>
+
+          <button
+            class="nav-toggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="site-nav"
+            aria-label="Open navigation"
+          >
+            <span></span>
+            <span></span>
+          </button>
+
+          <nav class="site-nav" id="site-nav" aria-label="Primary navigation">
+            <a href="../index.html#home">Home</a>
+            <a href="../index.html#services">Services</a>
+            <a href="../index.html#team">Team</a>
+            <a href="../index.html#research">Research</a>
+            <a href="inside-a-llm.html">Tools</a>
+            <a href="../index.html#contact">Contact</a>
+          </nav>
+
+          <a class="button button-primary header-cta" href="../index.html#contact">Start a Project</a>
+        </div>
+      </header>
+
+      <main data-inside-llm>
+        <section class="tool-hero">
+          <div class="tool-hero-grid">
+            <div class="tool-copy">
+              <p class="eyebrow">Interactive Tool</p>
+              <h1 class="tool-title">Inside an <em>LLM</em></h1>
+              <p class="tool-subtitle">
+                Load a real language model in the browser and inspect how it tokenizes
+                text, maps words into vectors, compares token relationships, and chooses
+                the next token. No server. No API key. Just the model on your machine.
+              </p>
+
+              <div class="tool-actions">
+                <a class="button button-primary" href="#inside-llm-lab">Open the Lab</a>
+                <a class="button button-secondary" href="../index.html#services">Back to Asgorithm</a>
+              </div>
+
+              <div class="tool-stat-row">
+                <span>Browser-native inference</span>
+                <span>Real token probabilities</span>
+                <span>Vector and similarity views</span>
+              </div>
+            </div>
+
+            <div class="tool-summary-card reveal">
+              <div class="tool-meta-row">
+                <span class="tool-badge">Asgorithm Lab</span>
+                <span class="tool-badge" id="gpuBadge">Checking device</span>
+              </div>
+              <h2>From prompt to logits, in four visible stages.</h2>
+              <p>
+                A compact product-style walkthrough of how a browser-native model reads,
+                maps, compares, and predicts.
+              </p>
+              <div class="tool-summary-signal">
+                <div class="tool-signal-panel">
+                  <div class="tool-signal-grid">
+                    <div class="tool-signal-cell">
+                      <span>Stage 01</span>
+                      <strong>Token IDs</strong>
+                    </div>
+                    <div class="tool-signal-cell">
+                      <span>Stage 02</span>
+                      <strong>Vector Surface</strong>
+                    </div>
+                    <div class="tool-signal-cell">
+                      <span>Stage 03</span>
+                      <strong>Similarity Map</strong>
+                    </div>
+                    <div class="tool-signal-cell">
+                      <span>Stage 04</span>
+                      <strong>Next Token</strong>
+                    </div>
+                  </div>
+                </div>
+                <div class="tool-signal-metrics">
+                  <div class="tool-signal-metric">
+                    <span>Inference Mode</span>
+                    <strong>Local Browser</strong>
+                  </div>
+                  <div class="tool-signal-metric">
+                    <span>Output Surface</span>
+                    <strong>Real Logits</strong>
+                  </div>
+                </div>
+              </div>
+              <div class="tool-summary-grid">
+                <div class="tool-summary-item">
+                  <strong>01 Tokenization</strong>
+                  <p>See the prompt split into real token IDs from the selected model vocabulary.</p>
+                </div>
+                <div class="tool-summary-item">
+                  <strong>02 Embeddings</strong>
+                  <p>Inspect the vector surface that turns words into numerical representations.</p>
+                </div>
+                <div class="tool-summary-item">
+                  <strong>03 Relationships</strong>
+                  <p>Compare token similarity directly and see which parts of the prompt sit closer together.</p>
+                </div>
+                <div class="tool-summary-item">
+                  <strong>04 Prediction</strong>
+                  <p>Watch the real probability distribution and generate fresh tokens with temperature control.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="tool-flow-strip">
+            <article class="tool-flow-card">
+              <strong>Load</strong>
+              <p>Choose a small model and bring the runtime into the browser.</p>
+            </article>
+            <article class="tool-flow-card">
+              <strong>Inspect</strong>
+              <p>Break the prompt into tokens, vectors, and relationships.</p>
+            </article>
+            <article class="tool-flow-card">
+              <strong>Predict</strong>
+              <p>Read the next-token distribution instead of just the final answer.</p>
+            </article>
+            <article class="tool-flow-card">
+              <strong>Generate</strong>
+              <p>Adjust temperature and see how the output path changes.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="tool-experience" id="inside-llm-lab">
+          <div class="tool-experience-shell">
+            <div class="tool-experience-heading reveal">
+              <p class="eyebrow">Interactive Walkthrough</p>
+              <h2>The model, exposed as a product surface.</h2>
+              <p>
+                Start with setup, run a prompt, then move stage by stage through the
+                model’s internal path from text to next-token choice.
+              </p>
+            </div>
+
+            <div class="tool-launch-grid">
+              <section class="tool-panel reveal">
+                <div class="tool-panel-heading">
+                  <div>
+                    <span class="eyebrow">Model Setup</span>
+                    <h2>Choose a model and load it locally.</h2>
+                    <p>
+                      The first run downloads the weights into the browser cache. After
+                      that, reloads are much faster.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="tool-toolbar">
+                  <div class="tool-note tool-runtime-warning" id="runtimeWarning" hidden>
+                    <strong>Use the local server URL.</strong> This tool is more reliable on
+                    <a href="http://127.0.0.1:8123/tools/inside-a-llm.html">http://127.0.0.1:8123/tools/inside-a-llm.html</a>
+                    than on <code>file://</code>.
+                  </div>
+
+                  <div class="tool-input-row">
+                    <select class="tool-select" id="modelSel" aria-label="Model selector"></select>
+                    <button class="button button-primary tool-button" id="loadBtn" type="button">
+                      Load model
+                    </button>
+                  </div>
+
+                  <div class="tool-progress" id="barWrap" aria-hidden="true">
+                    <div class="tool-progress-bar" id="bar"></div>
+                  </div>
+
+                  <div class="tool-console">
+                    <div class="tool-status" id="status">
+                      Choose a model and click load. The first load downloads it, caches it,
+                      and runs entirely on your device.
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <div id="app" hidden>
+                <section class="tool-panel reveal">
+                  <div class="tool-panel-heading">
+                    <div>
+                      <span class="eyebrow">Prompt</span>
+                      <h2>Run a prompt through the model.</h2>
+                      <p>
+                        Start with a short phrase so the intermediate stages stay easy to
+                        inspect.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="tool-input-row">
+                    <input
+                      class="tool-input"
+                      type="text"
+                      id="prompt"
+                      value="The capital of France is"
+                      spellcheck="false"
+                    />
+                    <button class="button button-primary tool-button" id="run" type="button">Run</button>
+                  </div>
+
+                  <div class="tool-example-row">
+                    <button class="tool-example" type="button">The capital of France is</button>
+                    <button class="tool-example" type="button">Once upon a time there was a</button>
+                    <button class="tool-example" type="button">The three primary colors are red, blue, and</button>
+                  </div>
+
+                  <div class="tool-console" style="margin-top: 1rem;">
+                    <div class="tool-status" id="runStatus"></div>
+                  </div>
+                </section>
+              </div>
+            </div>
+
+            <div id="tool-stage-stack" hidden>
+              <section class="tool-panel tool-stage reveal" id="pTokens">
+                <div class="tool-panel-heading tool-stage-copy">
+                  <div>
+                    <span class="eyebrow">Stage 01</span>
+                    <h2><span class="tool-step">01</span> Tokenization</h2>
+                    <p>
+                      The tokenizer splits your text into units and maps each unit to a
+                      vocabulary ID. The model only sees these numbers.
+                    </p>
+                  </div>
+                </div>
+                <div class="tool-panel-body">
+                  <div class="tool-token-grid" id="tokens"></div>
+                  <div class="tool-note" id="tokNote"></div>
+                </div>
+              </section>
+
+              <section class="tool-panel tool-stage reveal" id="pEmbed">
+                <div class="tool-panel-heading tool-stage-copy">
+                  <div>
+                    <span class="eyebrow">Stage 02</span>
+                    <h2><span class="tool-step">02</span> Embeddings</h2>
+                    <p>
+                      Each word becomes a high-dimensional vector. This view shows the first
+                      48 values per word as a compact heat strip.
+                    </p>
+                  </div>
+                </div>
+                <div class="tool-panel-body">
+                  <div class="tool-embed-grid" id="embed"></div>
+                  <div class="tool-legend">
+                    <span class="tool-swatch-label">
+                      <span class="tool-swatch" style="background: rgba(176, 74, 47, 0.85);"></span>
+                      Negative
+                    </span>
+                    <span class="tool-swatch-label">
+                      <span class="tool-swatch" style="background: rgba(43, 108, 176, 0.85);"></span>
+                      Positive
+                    </span>
+                    <span class="tool-swatch-label">Brighter = larger magnitude</span>
+                  </div>
+                </div>
+              </section>
+
+              <section class="tool-panel tool-stage reveal" id="pSim">
+                <div class="tool-panel-heading tool-stage-copy">
+                  <div>
+                    <span class="eyebrow">Stage 03</span>
+                    <h2><span class="tool-step">03</span> Token relationships</h2>
+                    <p>
+                      Real cosine similarity across the token vectors. Brighter cells mean
+                      the word vectors sit closer in embedding space.
+                    </p>
+                  </div>
+                </div>
+                <div class="tool-panel-body">
+                  <div class="tool-sim-wrap">
+                    <div id="sim"></div>
+                  </div>
+                  <div class="tool-note">
+                    <strong>Why this view exists:</strong> browser-friendly model exports
+                    usually expose token generation and logits, but not raw attention tensors.
+                    This stage uses a compact embedding model to show real vector structure
+                    and relative closeness with numbers you can inspect.
+                  </div>
+                </div>
+              </section>
+
+              <section class="tool-panel tool-stage reveal" id="pPred">
+                <div class="tool-panel-heading tool-stage-copy">
+                  <div>
+                    <span class="eyebrow">Stage 04</span>
+                    <h2><span class="tool-step">04</span> Next-token prediction</h2>
+                    <p>
+                      This is the model’s actual probability distribution over what comes
+                      next, computed directly from the output logits.
+                    </p>
+                  </div>
+                </div>
+                <div class="tool-panel-body">
+                  <div class="tool-predictions" id="pred"></div>
+
+                  <div class="tool-controls">
+                    <label for="temp">Temperature</label>
+                    <div class="tool-range-wrap">
+                      <input class="tool-range" type="range" id="temp" min="0.1" max="1.5" step="0.1" value="0.8" />
+                      <span class="tool-temperature-value" id="tempVal">0.8</span>
+                    </div>
+                    <button class="button button-secondary tool-button is-ghost" id="genBtn" type="button">
+                      Generate 24 tokens
+                    </button>
+                    <button class="button button-secondary tool-button is-ghost" id="genReset" type="button">
+                      Reset
+                    </button>
+                  </div>
+
+                  <div class="tool-output" id="genOut"></div>
+
+                  <div class="tool-note">
+                    <strong>Temperature controls variance.</strong> Lower values keep the
+                    model near its top choice. Higher values flatten the distribution, giving
+                    lower-probability tokens more room to appear.
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </section>
+
+        <section class="tool-notes">
+          <div class="tool-notes-grid">
+            <article class="tool-footnote-card">
+              <span class="eyebrow">Runtime</span>
+              <h3>Everything runs in-browser.</h3>
+              <p>
+                The page uses WebGPU when available and falls back to WASM when it is not.
+                That means performance depends on the device and browser.
+              </p>
+            </article>
+            <article class="tool-footnote-card">
+              <span class="eyebrow">Model Scope</span>
+              <h3>Small models, real mechanics.</h3>
+              <p>
+                The point is not benchmark leadership. The point is making the mechanics of
+                a modern language model visible with a practical local setup.
+              </p>
+            </article>
+            <article class="tool-footnote-card">
+              <span class="eyebrow">Asgorithm</span>
+              <h3>Product-grade systems thinking.</h3>
+              <p>
+                This is the same product and infrastructure mindset we apply across AI
+                systems, tooling, internal platforms, and technical communication surfaces.
+              </p>
+            </article>
+          </div>
+        </section>
+      </main>
+
+      <div class="tool-page-footer">
+        <footer class="site-footer">
+          <div class="section-shell footer-top">
+            <div class="footer-brand">
+              <img src="../public/logo.png" alt="Asgorithm Technologies" />
+              <p>Engineering AI-First And Blockchain-First Companies</p>
+            </div>
+
+            <div class="footer-links">
+              <div class="footer-column">
+                <span>Navigate</span>
+                <a href="../index.html#home">Home</a>
+                <a href="../index.html#services">Services</a>
+                <a href="../index.html#research">Research</a>
+                <a href="inside-a-llm.html">Tools</a>
+              </div>
+              <div class="footer-column">
+                <span>Work</span>
+                <a href="../ai-systems.html">AI Systems</a>
+                <a href="../blockchain-systems.html">Blockchain Systems</a>
+                <a href="../advanced-systems.html">Advanced Systems</a>
+              </div>
+              <div class="footer-column">
+                <span>Connect</span>
+                <a href="mailto:hello@asgorithm.com">hello@asgorithm.com</a>
+                <a href="https://www.linkedin.com/company/asgorithm-technologies" target="_blank" rel="noreferrer">LinkedIn</a>
+                <a href="https://github.com/asgorithm" target="_blank" rel="noreferrer">GitHub</a>
+              </div>
+            </div>
+          </div>
+          <div class="footer-wordmark" aria-hidden="true">ASGORITHM</div>
+        </footer>
+      </div>
+    </div>
+
+    <script src="../service-data.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js"></script>
+    <script src="../script.js"></script>
+    <script type="module">
+      const toolRoot = document.querySelector("[data-inside-llm]");
+
+      if (toolRoot) {
+        const { env, AutoTokenizer, AutoModelForCausalLM, pipeline, TextStreamer } =
+          await import("https://cdn.jsdelivr.net/npm/@huggingface/transformers");
+
+        env.allowLocalModels = false;
+
+        const MODELS = {
+          "smollm2-360m": {
+            id: "HuggingFaceTB/SmolLM2-360M-Instruct",
+            label: "SmolLM2 360M · 2024 · ~250 MB",
+            dtype: "q4f16",
+          },
+          "qwen3-0.6b": {
+            id: "onnx-community/Qwen3-0.6B-ONNX",
+            label: "Qwen3 0.6B · 2025 · ~500 MB",
+            dtype: "q4f16",
+          },
+          "gemma3-270m": {
+            id: "onnx-community/gemma-3-270m-it-ONNX",
+            label: "Gemma 3 270M · 2025 · ~550 MB (fp32)",
+            dtype: "fp32",
+          },
+          "llama3.2-1b": {
+            id: "onnx-community/Llama-3.2-1B-Instruct-ONNX",
+            label: "Llama 3.2 1B · 2024 · ~900 MB (heavy)",
+            dtype: "q4f16",
+          },
+          distilgpt2: {
+            id: "Xenova/distilgpt2",
+            label: "DistilGPT-2 · 2019 · ~80 MB (baseline)",
+            dtype: "q8",
+          },
+        };
+
+        const EMBEDDING_MODEL = "Xenova/all-MiniLM-L6-v2";
+        const hasGPU = Boolean(navigator.gpu);
+        const $ = (selector) => document.querySelector(selector);
+        const esc = (value) =>
+          String(value)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;");
+        const mark = (value) => value.replace(/\u0120/g, "·").replace(/\u2581/g, "·");
+
+        let tokenizer;
+        let languageModel;
+        let embedder;
+        let currentModelKey = null;
+        let lastRun = null;
+        let generationBusy = false;
+
+        function setStatus(text, isError = false) {
+          const status = $("#status");
+          status.innerHTML = text;
+          status.classList.toggle("is-error", isError);
+        }
+
+        function formatToken(id) {
+          try {
+            return tokenizer.decode([id]);
+          } catch (_error) {
+            return "?";
+          }
+        }
+
+        function setGpuBadge(label, stateClass = "") {
+          const badge = $("#gpuBadge");
+          badge.textContent = label;
+          badge.className = `tool-badge ${stateClass}`.trim();
+        }
+
+        function initUi() {
+          const modelSelect = $("#modelSel");
+
+          modelSelect.innerHTML = Object.entries(MODELS)
+            .map(
+              ([key, model]) =>
+                `<option value="${key}">${model.label}</option>`
+            )
+            .join("");
+
+          modelSelect.value = "smollm2-360m";
+          setGpuBadge(hasGPU ? "WebGPU available" : "CPU / WASM mode", hasGPU ? "is-live" : "");
+        }
+
+        async function loadModel() {
+          const key = $("#modelSel").value;
+          const model = MODELS[key];
+          const loadButton = $("#loadBtn");
+          const modelSelect = $("#modelSel");
+          const progressWrap = $("#barWrap");
+          const progressBar = $("#bar");
+          const seenProgress = {};
+          const device = hasGPU ? "webgpu" : "wasm";
+
+          let dtype = model.dtype;
+          if (device === "wasm" && dtype === "q4f16") {
+            dtype = "q8";
+          }
+
+          loadButton.disabled = true;
+          modelSelect.disabled = true;
+          progressWrap.classList.add("is-visible");
+          progressBar.style.width = "0%";
+          setGpuBadge("Loading model", "is-loading");
+
+          const progressCallback = (progress) => {
+            if (progress.status === "progress" && progress.file) {
+              seenProgress[progress.file] = progress.progress || 0;
+            }
+
+            const values = Object.values(seenProgress);
+            const average = values.length
+              ? values.reduce((sum, value) => sum + value, 0) / values.length
+              : 0;
+
+            progressBar.style.width = `${Math.round(average)}%`;
+            setStatus(
+              `${esc(progress.status || "loading")}${
+                progress.file ? ` · ${esc(progress.file)}` : ""
+              }`
+            );
+          };
+
+          try {
+            setStatus(`Loading ${esc(model.id)} …`);
+            tokenizer = await AutoTokenizer.from_pretrained(model.id, {
+              progress_callback: progressCallback,
+            });
+            languageModel = await AutoModelForCausalLM.from_pretrained(model.id, {
+              dtype,
+              device,
+              progress_callback: progressCallback,
+            });
+
+            if (!embedder) {
+              setStatus("Loading embedding model …");
+              embedder = await pipeline("feature-extraction", EMBEDDING_MODEL, { device });
+            }
+
+            currentModelKey = key;
+            progressBar.style.width = "100%";
+            setStatus(`Ready · ${esc(model.id)} on ${device}`);
+            setGpuBadge(hasGPU ? "WebGPU active" : "WASM active", hasGPU ? "is-live" : "");
+            $("#app").hidden = false;
+            $("#tool-stage-stack").hidden = false;
+            loadButton.disabled = false;
+            modelSelect.disabled = false;
+            loadButton.textContent = "Reload model";
+            await runPrompt();
+          } catch (error) {
+            setStatus(
+              `Could not load this model: ${esc(
+                String(error.message || error)
+              )}<br />Try another model or use a Chromium browser with WebGPU.`,
+              true
+            );
+            setGpuBadge(hasGPU ? "WebGPU available" : "CPU / WASM mode", hasGPU ? "is-live" : "");
+            loadButton.disabled = false;
+            modelSelect.disabled = false;
+          }
+        }
+
+        function renderTokens(pieces, ids) {
+          $("#tokens").innerHTML = pieces
+            .map((piece, index) => {
+              let tokenHtml = mark(esc(piece));
+              if (tokenHtml.startsWith("·")) {
+                tokenHtml = `<span class="tool-token-space">·</span>${tokenHtml.slice(1)}`;
+              }
+
+              return `
+                <div class="tool-token">
+                  <span class="tool-token-text">${tokenHtml}</span>
+                  <span class="tool-token-id">${ids[index]}</span>
+                </div>
+              `;
+            })
+            .join("");
+
+          $("#tokNote").innerHTML = `
+            <strong>${pieces.length} tokens.</strong> A leading
+            <span class="tool-token-space">·</span> marks a space attached to the token.
+            The number underneath is the token ID in the selected model’s vocabulary.
+          `;
+        }
+
+        function colorForCell(value, scale) {
+          const alpha = Math.min(0.92, Math.abs(value) / scale * 0.92 + 0.05);
+          return value >= 0
+            ? `rgba(43, 108, 176, ${alpha.toFixed(3)})`
+            : `rgba(176, 74, 47, ${alpha.toFixed(3)})`;
+        }
+
+        async function embedWord(word) {
+          const output = await embedder(word, { pooling: "mean", normalize: false });
+          return Array.from(output.data);
+        }
+
+        function cosineSimilarity(a, b) {
+          let dot = 0;
+          let normA = 0;
+          let normB = 0;
+
+          for (let index = 0; index < a.length; index += 1) {
+            dot += a[index] * b[index];
+            normA += a[index] * a[index];
+            normB += b[index] * b[index];
+          }
+
+          return dot / (Math.sqrt(normA) * Math.sqrt(normB) + 1e-9);
+        }
+
+        function renderRelationships(words, vectors) {
+          const count = Math.min(words.length, 9);
+          const label = (word) => (word.length > 6 ? word.slice(0, 6) : word);
+          const gridStyle = `grid-template-columns: 56px repeat(${count}, 36px);`;
+          let html = `<div class="tool-sim-grid" style="${gridStyle}"><div class="tool-sim-axis"></div>`;
+
+          for (let column = 0; column < count; column += 1) {
+            html += `<div class="tool-sim-axis">${esc(label(words[column]))}</div>`;
+          }
+
+          for (let row = 0; row < count; row += 1) {
+            html += `<div class="tool-sim-axis is-row">${esc(label(words[row]))}</div>`;
+
+            for (let column = 0; column < count; column += 1) {
+              const score =
+                row === column ? 1 : Math.max(0, cosineSimilarity(vectors[row], vectors[column]));
+              html += `
+                <div
+                  class="tool-sim-cell"
+                  title="${score.toFixed(2)}"
+                  style="background: rgba(29, 110, 86, ${(score * 0.9 + 0.05).toFixed(3)});"
+                ></div>
+              `;
+            }
+          }
+
+          html += "</div>";
+          $("#sim").innerHTML = html;
+        }
+
+        async function renderEmbeddings(text) {
+          const words = text.split(/\s+/).filter(Boolean).slice(0, 12);
+          const vectors = [];
+
+          for (const word of words) {
+            vectors.push(await embedWord(word));
+          }
+
+          let scale = 0.01;
+          for (const vector of vectors) {
+            for (let dimension = 0; dimension < 48; dimension += 1) {
+              scale = Math.max(scale, Math.abs(vector[dimension] || 0));
+            }
+          }
+
+          $("#embed").innerHTML = words
+            .map((word, index) => {
+              const cells = Array.from({ length: 48 }, (_unused, dimension) => {
+                const value = vectors[index][dimension] || 0;
+                return `
+                  <div
+                    class="tool-embed-cell"
+                    title="${value.toFixed(3)}"
+                    style="background: ${colorForCell(value, scale)};"
+                  ></div>
+                `;
+              }).join("");
+
+              return `
+                <div class="tool-embed-row">
+                  <div class="tool-dimension-label">${esc(word)}</div>
+                  <div class="tool-embed-cells">${cells}</div>
+                </div>
+              `;
+            })
+            .join("");
+
+          renderRelationships(words, vectors);
+        }
+
+        async function nextLogits(text) {
+          const inputs = await tokenizer(text);
+
+          try {
+            const output = await languageModel.generate({
+              ...inputs,
+              max_new_tokens: 1,
+              do_sample: false,
+              return_dict_in_generate: true,
+              output_scores: true,
+            });
+
+            if (output.scores && output.scores[0]) {
+              return Array.from(output.scores[0].data);
+            }
+          } catch (_error) {
+            // Fall through to direct forward pass.
+          }
+
+          const output = await languageModel(inputs);
+          const vocab = output.logits.dims[2];
+          const sequence = output.logits.dims[1];
+          return Array.from(output.logits.data.slice((sequence - 1) * vocab, sequence * vocab));
+        }
+
+        function softmax(logits, temperature) {
+          let max = -Infinity;
+
+          for (let index = 0; index < logits.length; index += 1) {
+            if (logits[index] > max) {
+              max = logits[index];
+            }
+          }
+
+          let sum = 0;
+          const exponentials = new Array(logits.length);
+
+          for (let index = 0; index < logits.length; index += 1) {
+            const exponential = Math.exp((logits[index] - max) / temperature);
+            exponentials[index] = exponential;
+            sum += exponential;
+          }
+
+          for (let index = 0; index < exponentials.length; index += 1) {
+            exponentials[index] /= sum;
+          }
+
+          return exponentials;
+        }
+
+        function renderPredictions() {
+          if (!lastRun) return;
+
+          const temperature = Number.parseFloat($("#temp").value);
+          const probabilities = softmax(lastRun.logits, temperature);
+          const topTokens = probabilities
+            .map((probability, index) => ({ index, probability }))
+            .sort((a, b) => b.probability - a.probability)
+            .slice(0, 10);
+          const max = topTokens[0].probability;
+
+          $("#pred").innerHTML = topTokens
+            .map((entry, rank) => {
+              const ratio = entry.probability / max;
+              return `
+                <div class="tool-pred-row ${rank === 0 ? "is-top" : ""}">
+                  <div class="tool-pred-token">${esc(mark(formatToken(entry.index)))}</div>
+                  <div class="tool-pred-bar">
+                    <div
+                      class="tool-pred-bar-fill"
+                      style="width: ${(ratio * 100).toFixed(1)}%; opacity: ${(0.45 + ratio * 0.5).toFixed(2)};"
+                    ></div>
+                  </div>
+                  <div class="tool-pred-prob">${(entry.probability * 100).toFixed(1)}%</div>
+                </div>
+              `;
+            })
+            .join("");
+        }
+
+        async function runPrompt() {
+          const inputText = $("#prompt").value.trim();
+          if (!inputText || !languageModel) return;
+
+          $("#runStatus").textContent = "Running the model on your prompt…";
+          $("#runStatus").classList.remove("is-error");
+
+          try {
+            const ids = tokenizer.encode(inputText);
+            let pieces;
+
+            try {
+              pieces = tokenizer.model.convert_ids_to_tokens(ids);
+            } catch (_error) {
+              pieces = ids.map(formatToken);
+            }
+
+            renderTokens(pieces, ids);
+            await renderEmbeddings(inputText);
+
+            const logits = await nextLogits(inputText);
+            lastRun = { logits, text: inputText };
+            $("#temp").value = "0.8";
+            $("#tempVal").textContent = "0.8";
+            renderPredictions();
+            $("#genOut").innerHTML = `${esc(inputText)} <span class="is-cursor">▌</span>`;
+            $("#runStatus").textContent = "";
+          } catch (error) {
+            $("#runStatus").textContent = `Error: ${String(error.message || error)}`;
+            $("#runStatus").classList.add("is-error");
+          }
+        }
+
+        async function generateSequence() {
+          if (!lastRun || generationBusy) return;
+
+          generationBusy = true;
+          $("#genBtn").disabled = true;
+          const temperature = Number.parseFloat($("#temp").value);
+          const base = esc(lastRun.text);
+          let added = "";
+          $("#genOut").innerHTML = `${base} <span class="is-cursor">▌</span>`;
+
+          try {
+            const inputs = await tokenizer(lastRun.text);
+            const streamer = new TextStreamer(tokenizer, {
+              skip_prompt: true,
+              skip_special_tokens: true,
+              callback_function: (token) => {
+                added += token;
+                $("#genOut").innerHTML = `${base}<span class="is-new">${esc(added)}</span> <span class="is-cursor">▌</span>`;
+              },
+            });
+
+            await languageModel.generate({
+              ...inputs,
+              max_new_tokens: 24,
+              do_sample: true,
+              temperature,
+              top_k: 50,
+              streamer,
+            });
+          } catch (error) {
+            $("#genOut").innerHTML += ` <span class="is-error">[${esc(
+              String(error.message || error)
+            )}]</span>`;
+          }
+
+          generationBusy = false;
+          $("#genBtn").disabled = false;
+        }
+
+        initUi();
+
+        if (window.location.protocol === "file:") {
+          $("#runtimeWarning").hidden = false;
+        }
+
+        document.querySelectorAll(".tool-example").forEach((button) => {
+          button.addEventListener("click", () => {
+            $("#prompt").value = button.textContent.trim();
+            if (currentModelKey) {
+              runPrompt();
+            }
+          });
+        });
+
+        $("#loadBtn").addEventListener("click", loadModel);
+        $("#run").addEventListener("click", () => {
+          if (languageModel) {
+            runPrompt();
+          }
+        });
+
+        $("#prompt").addEventListener("keydown", (event) => {
+          if (event.key === "Enter" && languageModel) {
+            runPrompt();
+          }
+        });
+
+        $("#temp").addEventListener("input", () => {
+          $("#tempVal").textContent = Number.parseFloat($("#temp").value).toFixed(1);
+          renderPredictions();
+        });
+
+        $("#genReset").addEventListener("click", () => {
+          if (lastRun) {
+            $("#genOut").innerHTML = `${esc(lastRun.text)} <span class="is-cursor">▌</span>`;
+          }
+        });
+
+        $("#genBtn").addEventListener("click", generateSequence);
+      }
+    </script>
+  </body>
+</html>
