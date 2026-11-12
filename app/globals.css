@@ -126,6 +126,33 @@
 .article-body th, .article-body td { text-align: left; padding: 0.7em 0.8em; border-bottom: 1px solid var(--color-line); }
 .article-body th { color: var(--color-fg); font-weight: 500; }
 
+/* ---- Lab feature ---- */
+.lab-card {
+  background: conic-gradient(from var(--lab-angle, 0deg), var(--color-signal), var(--color-azure), transparent 30%, transparent 70%, var(--color-signal));
+  animation: lab-spin 8s linear infinite;
+  box-shadow: 0 40px 140px -60px color-mix(in srgb, var(--color-signal) 45%, transparent);
+}
+@property --lab-angle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+@keyframes lab-spin { to { --lab-angle: 360deg; } }
+.lab-token { opacity: 0; transform: translateY(10px); }
+.lab-bar { width: 0; }
+.js .reveal[data-shown="true"] .lab-token, html:not(.js) .lab-token {
+  animation: lab-in 0.7s var(--ease-out-expo) forwards;
+  animation-delay: calc(var(--i) * 140ms + 300ms);
+}
+.js .reveal[data-shown="true"] .lab-bar, html:not(.js) .lab-bar {
+  animation: lab-grow 1.4s var(--ease-out-expo) forwards;
+  animation-delay: calc(var(--i) * 120ms + 1000ms);
+}
+@keyframes lab-in { to { opacity: 1; transform: none; } }
+@keyframes lab-grow { to { width: var(--w); } }
+.lab-caret { animation: lab-blink 1s steps(1) infinite; }
+@keyframes lab-blink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .lab-token { opacity: 1; transform: none; }
+  .lab-bar { width: var(--w); }
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;

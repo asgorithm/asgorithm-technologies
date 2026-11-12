@@ -4,6 +4,7 @@ import { Manifesto } from "@/components/manifesto";
 import { Work } from "@/components/work";
 import { Capabilities } from "@/components/capabilities";
 import { Method } from "@/components/method";
+import { Lab } from "@/components/lab";
 import { Journal } from "@/components/journal";
 import { Studio } from "@/components/studio";
 import { Contact } from "@/components/contact";
@@ -26,6 +27,7 @@ export default function Home() {
         <Work />
         <Capabilities />
         <Method />
+        <Lab />
         <Journal />
         <Studio />
         <Contact />

@@ -4,7 +4,7 @@ import { SectionHead } from "./section-head";
 export function Journal() {
   return (
     <section id="journal" className="mx-auto max-w-[1400px] scroll-mt-20 px-4 pb-32 sm:px-8">
-      <SectionHead index="04" label="Journal & research">
+      <SectionHead index="05" label="Journal & research">
         We write about what <em>we build</em>.
       </SectionHead>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -39,16 +39,6 @@ export function Journal() {
           </a>
         ))}
       </div>
-      <a
-        href="/tools/inside-a-llm.html"
-        className="reveal group mt-6 flex items-center justify-between rounded-3xl border border-line px-7 py-6 transition-colors hover:border-fg/25"
-      >
-        <span>
-          <span className="font-mono text-sm tracking-wider text-muted uppercase">Interactive</span>
-          <span className="mt-1 block text-2xl font-light tracking-tight">Inside an LLM: watch a model turn tokens into text</span>
-        </span>
-        <span aria-hidden="true" className="text-2xl text-dim transition-all duration-500 group-hover:rotate-45 group-hover:text-signal">↗</span>
-      </a>
     </section>
   );
 }

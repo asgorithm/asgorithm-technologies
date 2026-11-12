@@ -4,7 +4,7 @@ import { SectionHead } from "./section-head";
 export function Studio() {
   return (
     <section id="studio" className="mx-auto max-w-[1400px] scroll-mt-20 px-4 pb-32 sm:px-8">
-      <SectionHead index="05" label="Studio">
+      <SectionHead index="06" label="Studio">
         Small by design. <em>Systems-first</em> by default.
       </SectionHead>
       <div className="grid gap-6 md:grid-cols-2">

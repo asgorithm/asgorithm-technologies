@@ -6,7 +6,7 @@ export function Contact() {
     <section id="contact" className="relative scroll-mt-20 overflow-hidden border-t border-line">
       <div className="pointer-events-none absolute -bottom-1/2 left-1/2 h-[900px] w-[900px] -translate-x-1/2 rounded-full bg-signal/[0.07] blur-[120px]" />
       <div className="relative mx-auto max-w-[1400px] px-4 py-32 sm:px-8 sm:py-44">
-        <span className="font-mono text-sm tracking-wider text-muted uppercase">06 / Contact</span>
+        <span className="font-mono text-sm tracking-wider text-muted uppercase">07 / Contact</span>
         <h2 className="reveal mt-10 text-[clamp(3rem,10vw,9rem)] leading-[0.92] font-light tracking-[-0.045em]">
           Have something
           <br />

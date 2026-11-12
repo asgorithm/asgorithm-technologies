@@ -74,7 +74,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: site
-          image: localhost:5000/asgorithm-site:0.1.1@sha256:ae5bc7791374de8e4b77e93d142d8e190c3f54d4fe8f8880a9ac1cc05ab3f9f1
+          image: localhost:5000/asgorithm-site:0.1.3@sha256:5aec9c338bcb983f6fe06003e8585ce58b50e7cb88230b0650f59b1b6fa71ba8
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
