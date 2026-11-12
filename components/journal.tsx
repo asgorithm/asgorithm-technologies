@@ -3,7 +3,7 @@ import { SectionHead } from "./section-head";
 
 export function Journal() {
   return (
-    <section id="journal" className="mx-auto max-w-[1400px] scroll-mt-16 px-4 pb-32 sm:px-8">
+    <section id="journal" className="mx-auto max-w-[1400px] scroll-mt-20 px-4 pb-32 sm:px-8">
       <SectionHead index="04" label="Journal & research">
         We write about what <em>we build</em>.
       </SectionHead>
@@ -27,14 +27,14 @@ export function Journal() {
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_85%_15%,var(--a1),transparent_55%)] mix-blend-screen" />
             </div>
             <div className="flex flex-1 flex-col p-7">
-              <span className="flex items-center justify-between font-mono text-[13px] tracking-wider text-muted uppercase">
+              <span className="flex items-center justify-between font-mono text-sm tracking-wider text-muted uppercase">
                 {a.kind}
                 <span aria-hidden="true" className="text-dim transition-all duration-500 group-hover:rotate-45 group-hover:text-signal">
                   ↗
                 </span>
               </span>
               <h3 className="mt-5 text-3xl font-light tracking-tight transition-colors group-hover:text-signal">{a.title}</h3>
-              <p className="mt-3 text-base leading-relaxed text-muted">{a.excerpt}</p>
+              <p className="mt-3 text-lg leading-relaxed text-muted">{a.excerpt}</p>
             </div>
           </a>
         ))}
@@ -44,7 +44,7 @@ export function Journal() {
         className="reveal group mt-6 flex items-center justify-between rounded-3xl border border-line px-7 py-6 transition-colors hover:border-fg/25"
       >
         <span>
-          <span className="font-mono text-[13px] tracking-wider text-muted uppercase">Interactive</span>
+          <span className="font-mono text-sm tracking-wider text-muted uppercase">Interactive</span>
           <span className="mt-1 block text-2xl font-light tracking-tight">Inside an LLM: watch a model turn tokens into text</span>
         </span>
         <span aria-hidden="true" className="text-2xl text-dim transition-all duration-500 group-hover:rotate-45 group-hover:text-signal">↗</span>

@@ -23,18 +23,19 @@ export function Nav() {
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
-        scrolled ? "border-b border-line bg-ink/70 backdrop-blur-xl" : "border-b border-transparent"
+        scrolled ? "border-b border-line bg-ink/80 backdrop-blur-xl" : "border-b border-transparent bg-gradient-to-b from-ink/90 via-ink/50 to-transparent"
       }`}
     >
-      <div className="mx-auto flex h-16 max-w-[1400px] items-center justify-between px-4 sm:px-8">
-        <a href="/" className="-ml-3 flex items-center" aria-label="Asgorithm home">
-          {/* The original Asgorithm logo (shield + wordmark), white on transparent. */}
+      <div className="mx-auto flex h-24 max-w-[1400px] items-center justify-between px-4 sm:px-8">
+        <a href="/" className="flex items-center gap-3.5" aria-label="Asgorithm home">
+          {/* Shield cropped from the original logo; the wordmark is live text so it stays legible. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/public/logo.png" alt="Asgorithm" width={250} height={150} className="logo -my-2 h-[76px] w-auto" />
+          <img src="/public/mark.png" alt="" width={98} height={114} className="logo h-12 w-auto sm:h-14" />
+          <span className="text-xl font-semibold tracking-[0.22em] text-fg uppercase sm:text-2xl">Asgorithm</span>
         </a>
         <nav aria-label="Primary" className="hidden items-center gap-9 md:flex">
           {links.map((l) => (
-            <a key={l.href} href={l.href} className="text-[15px] text-muted transition-colors hover:text-fg">
+            <a key={l.href} href={l.href} className="text-[17px] text-fg/80 transition-colors hover:text-fg">
               {l.label}
             </a>
           ))}
@@ -43,7 +44,7 @@ export function Nav() {
         <ThemeToggle />
         <a
           href="/#contact"
-          className="group rounded-full border border-line px-4 py-2 text-sm text-fg transition-colors hover:border-signal hover:bg-signal hover:text-ink"
+          className="group rounded-full border border-line px-4 py-2 text-base text-fg transition-colors hover:border-signal hover:bg-signal hover:text-ink"
         >
           <span className="sm:hidden">Contact</span>
           <span className="hidden sm:inline">Start a project</span>{" "}

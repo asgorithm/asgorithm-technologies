@@ -17,7 +17,6 @@ export const metadata: Metadata = {
   title: "Asgorithm Technologies: We engineer systems that think",
   description:
     "Asgorithm is an engineering studio in Coimbatore. We design and build AI systems, blockchain infrastructure and high-performance software, from first principle to production.",
-  icons: { icon: "/public/logo.png" },
   openGraph: {
     title: "Asgorithm Technologies",
     description: "We engineer systems that think. AI, blockchain and advanced software, built like products.",

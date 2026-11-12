@@ -22,9 +22,10 @@ export function FlowField() {
     let raf = 0;
     let visible = true;
     let t = 0;
-    const mouse = { x: -9999, y: -9999, active: false };
+    const mouse = { x: -9999, y: -9999, active: false, power: 0 };
+    const VORTEX_R2 = 300 * 300;
 
-    type P = { x: number; y: number; px: number; py: number; life: number; hue: 0 | 1 | 2 };
+    type P = { x: number; y: number; px: number; py: number; life: number; hue: 0 | 1 | 2; hot?: boolean; skip?: boolean };
     let ps: P[] = [];
 
     // Colours come from the theme tokens so the field follows dark/light.
@@ -38,6 +39,7 @@ export function FlowField() {
     let bg = "";
     let fade = "";
     let colors: string[] = [];
+    let hot = "";
     const readPalette = () => {
       const light = document.documentElement.dataset.theme === "light";
       bg = `rgb(${rgb("--color-ink")})`;
@@ -47,6 +49,7 @@ export function FlowField() {
         `rgba(${rgb("--color-signal")},${light ? 0.6 : 0.75})`,
         `rgba(${rgb("--color-azure")},${light ? 0.55 : 0.65})`,
       ];
+      hot = `rgba(${rgb("--color-signal")},${light ? 0.85 : 0.95})`;
     };
     readPalette();
 
@@ -93,32 +96,45 @@ export function FlowField() {
       t += 0.0035;
       ctx.fillStyle = fade;
       ctx.fillRect(0, 0, w, h);
-      ctx.lineWidth = 0.8;
+      // Ease the cursor's influence in and out so the vortex blooms rather than snaps.
+      mouse.power += ((mouse.active ? 1 : 0) - mouse.power) * 0.06;
 
-      for (let pass = 0; pass < 3; pass++) {
-        ctx.strokeStyle = colors[pass];
+      // Move every particle; those caught in the vortex are drawn "hot".
+      for (const p of ps) {
+        let a = angle(p.x, p.y);
+        let speed = 1.7;
+        p.hot = false;
+        if (mouse.power > 0.01) {
+          const dx = p.x - mouse.x;
+          const dy = p.y - mouse.y;
+          const d2 = dx * dx + dy * dy;
+          if (d2 < VORTEX_R2) {
+            const k = (1 - d2 / VORTEX_R2) * mouse.power;
+            // Swirl around the cursor with a slight inward pull.
+            a = a * (1 - k) + (Math.atan2(dy, dx) + Math.PI / 2 + 0.35) * k;
+            speed += k * 2.2;
+            p.hot = k > 0.18;
+          }
+        }
+        p.px = p.x;
+        p.py = p.y;
+        p.x += Math.cos(a) * speed;
+        p.y += Math.sin(a) * speed;
+        p.life--;
+        if (p.life <= 0 || p.x < 0 || p.x > w || p.y < 0 || p.y > h) {
+          spawn(p);
+          p.skip = true;
+        } else {
+          p.skip = false;
+        }
+      }
+
+      for (let pass = 0; pass < 4; pass++) {
+        ctx.strokeStyle = pass === 3 ? hot : colors[pass];
+        ctx.lineWidth = pass === 3 ? 1.3 : 0.8;
         ctx.beginPath();
         for (const p of ps) {
-          if (p.hue !== pass) continue;
-          let a = angle(p.x, p.y);
-          if (mouse.active) {
-            const dx = p.x - mouse.x;
-            const dy = p.y - mouse.y;
-            const d2 = dx * dx + dy * dy;
-            if (d2 < 52000) {
-              const k = 1 - d2 / 52000;
-              a = a * (1 - k) + (Math.atan2(dy, dx) + Math.PI / 2) * k;
-            }
-          }
-          p.px = p.x;
-          p.py = p.y;
-          p.x += Math.cos(a) * 1.7;
-          p.y += Math.sin(a) * 1.7;
-          p.life--;
-          if (p.life <= 0 || p.x < 0 || p.x > w || p.y < 0 || p.y > h) {
-            spawn(p);
-            continue;
-          }
+          if (p.skip || (pass === 3 ? !p.hot : p.hot || p.hue !== pass)) continue;
           ctx.moveTo(p.px, p.py);
           ctx.lineTo(p.x, p.y);
         }

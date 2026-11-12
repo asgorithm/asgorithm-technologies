@@ -14,6 +14,8 @@
       href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap"
       rel="stylesheet"
     />
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet" />
+    <link rel="icon" href="/icon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="../styles.css" />
     <style>
       .page-tool {
@@ -873,6 +875,23 @@
           text-align: left;
         }
       }
+
+      /* New site chrome (matches the Next.js pages). */
+      .asg-nav { position: fixed; inset: 0 0 auto 0; z-index: 50; height: 96px; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 0 max(16px, calc((100vw - 1400px) / 2 + 32px)); background: linear-gradient(180deg, rgb(7 8 10 / 0.92), rgb(7 8 10 / 0.5) 60%, transparent); backdrop-filter: blur(6px); font-family: "Inter Tight", "Instrument Sans", system-ui, sans-serif; }
+      .asg-brand { display: flex; align-items: center; gap: 14px; color: #ecebe6; text-decoration: none; }
+      .asg-brand img { height: 56px; width: auto; }
+      .asg-brand span { font-size: 24px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; }
+      .asg-links { display: flex; gap: 36px; }
+      .asg-links a { color: rgb(236 235 230 / 0.8); font-size: 17px; text-decoration: none; transition: color 0.2s; }
+      .asg-links a:hover { color: #ecebe6; }
+      .asg-cta { border: 1px solid rgb(255 255 255 / 0.09); border-radius: 999px; padding: 10px 18px; color: #ecebe6; font-size: 16px; text-decoration: none; transition: all 0.2s; }
+      .asg-cta:hover { background: #c8ff4d; border-color: #c8ff4d; color: #07080a; }
+      @media (max-width: 767px) { .asg-links { display: none; } .asg-brand img { height: 44px; } .asg-brand span { font-size: 18px; } .asg-nav { height: 80px; } }
+      .asg-footer { overflow: hidden; border-top: 1px solid rgb(255 255 255 / 0.09); font-family: "Inter Tight", "Instrument Sans", system-ui, sans-serif; }
+      .asg-word { padding: 40px 8px 0; text-align: center; font-size: 19.5vw; line-height: 0.8; font-weight: 500; letter-spacing: -0.06em; color: transparent; background: linear-gradient(180deg, rgb(236 235 230 / 0.14), transparent); -webkit-background-clip: text; background-clip: text; user-select: none; }
+      .asg-foot-row { max-width: 1400px; margin: 0 auto; padding: 32px max(16px, 32px); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; color: #a9abb1; font-size: 14px; }
+      .asg-mono { font-family: "JetBrains Mono", ui-monospace, monospace; letter-spacing: 0.08em; text-transform: uppercase; }
+      .page-tool .tool-hero { padding-top: 140px; }
     </style>
   </head>
   <body class="page-tool page-inside-llm">
@@ -880,34 +899,18 @@
       <div class="ambient ambient-top" aria-hidden="true"></div>
       <div class="ambient ambient-bottom" aria-hidden="true"></div>
 
-      <header class="site-header">
-        <div class="header-inner">
-          <a class="brand" href="../index.html#home" aria-label="Asgorithm Technologies home">
-            <img src="../public/logo.png" alt="Asgorithm Technologies" />
-          </a>
-
-          <button
-            class="nav-toggle"
-            type="button"
-            aria-expanded="false"
-            aria-controls="site-nav"
-            aria-label="Open navigation"
-          >
-            <span></span>
-            <span></span>
-          </button>
-
-          <nav class="site-nav" id="site-nav" aria-label="Primary navigation">
-            <a href="../index.html#home">Home</a>
-            <a href="../index.html#services">Services</a>
-            <a href="../index.html#team">Team</a>
-            <a href="../index.html#research">Research</a>
-            <a href="inside-a-llm.html">Tools</a>
-            <a href="../index.html#contact">Contact</a>
-          </nav>
-
-          <a class="button button-primary header-cta" href="../index.html#contact">Start a Project</a>
-        </div>
+      <header class="asg-nav">
+        <a class="asg-brand" href="/" aria-label="Asgorithm home">
+          <img src="/public/mark.png" alt="" width="98" height="114" />
+          <span>Asgorithm</span>
+        </a>
+        <nav class="asg-links" aria-label="Primary">
+          <a href="/#work">Work</a>
+          <a href="/#capabilities">Capabilities</a>
+          <a href="/#journal">Journal</a>
+          <a href="/#studio">Studio</a>
+        </nav>
+        <a class="asg-cta" href="/#contact">Start a project <span aria-hidden="true">→</span></a>
       </header>
 
       <main data-inside-llm>
@@ -924,7 +927,7 @@
 
               <div class="tool-actions">
                 <a class="button button-primary" href="#inside-llm-lab">Open the Lab</a>
-                <a class="button button-secondary" href="../index.html#services">Back to Asgorithm</a>
+                <a class="button button-secondary" href="/#capabilities">Back to Asgorithm</a>
               </div>
 
               <div class="tool-stat-row">
@@ -1043,7 +1046,7 @@
                 <div class="tool-toolbar">
                   <div class="tool-note tool-runtime-warning" id="runtimeWarning" hidden>
                     <strong>Use the local server URL.</strong> This tool is more reliable on
-                    <a href="http://127.0.0.1:8123/tools/inside-a-llm.html">http://127.0.0.1:8123/tools/inside-a-llm.html</a>
+                    <a href="/tools/inside-a-llm.html">asgorithm.com/tools/inside-a-llm.html</a>
                     than on <code>file://</code>.
                   </div>
 
@@ -1244,39 +1247,13 @@
         </section>
       </main>
 
-      <div class="tool-page-footer">
-        <footer class="site-footer">
-          <div class="section-shell footer-top">
-            <div class="footer-brand">
-              <img src="../public/logo.png" alt="Asgorithm Technologies" />
-              <p>Engineering AI-First And Blockchain-First Companies</p>
-            </div>
-
-            <div class="footer-links">
-              <div class="footer-column">
-                <span>Navigate</span>
-                <a href="../index.html#home">Home</a>
-                <a href="../index.html#services">Services</a>
-                <a href="../index.html#research">Research</a>
-                <a href="inside-a-llm.html">Tools</a>
-              </div>
-              <div class="footer-column">
-                <span>Work</span>
-                <a href="../ai-systems.html">AI Systems</a>
-                <a href="../blockchain-systems.html">Blockchain Systems</a>
-                <a href="../advanced-systems.html">Advanced Systems</a>
-              </div>
-              <div class="footer-column">
-                <span>Connect</span>
-                <a href="mailto:hello@asgorithm.com">hello@asgorithm.com</a>
-                <a href="https://www.linkedin.com/company/asgorithm-technologies" target="_blank" rel="noreferrer">LinkedIn</a>
-                <a href="https://github.com/asgorithm" target="_blank" rel="noreferrer">GitHub</a>
-              </div>
-            </div>
-          </div>
-          <div class="footer-wordmark" aria-hidden="true">ASGORITHM</div>
-        </footer>
-      </div>
+      <footer class="asg-footer">
+        <div class="asg-word" aria-hidden="true">ASGORITHM</div>
+        <div class="asg-foot-row">
+          <span>© 2026 Asgorithm Technologies</span>
+          <span class="asg-mono">Engineered in Coimbatore</span>
+        </div>
+      </footer>
     </div>
 
     <script src="../service-data.js"></script>
@@ -1288,7 +1265,7 @@
 
       if (toolRoot) {
         const { env, AutoTokenizer, AutoModelForCausalLM, pipeline, TextStreamer } =
-          await import("https://cdn.jsdelivr.net/npm/@huggingface/transformers");
+          await import("https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2");
 
         env.allowLocalModels = false;
 

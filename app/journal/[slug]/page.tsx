@@ -47,7 +47,7 @@ export default async function ArticlePage({ params }: Props) {
             href={`/journal/${next.slug}`}
             className="group mx-auto flex max-w-[1400px] flex-col gap-4 px-4 py-20 sm:px-8 sm:py-28"
           >
-            <span className="font-mono text-[13px] tracking-wider text-muted uppercase">Next · {next.label}</span>
+            <span className="font-mono text-sm tracking-wider text-muted uppercase">Next · {next.label}</span>
             <span className="text-[clamp(2.4rem,6vw,5.5rem)] leading-none font-light tracking-[-0.04em] transition-colors group-hover:text-signal">
               {next.title} <span aria-hidden="true" className="inline-block transition-transform duration-500 group-hover:translate-x-3">→</span>
             </span>

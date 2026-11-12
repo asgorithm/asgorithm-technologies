@@ -7,7 +7,7 @@ export function Footer() {
       >
         ASGORITHM
       </div>
-      <div className="mx-auto flex max-w-[1400px] flex-col justify-between gap-2 px-4 py-8 text-xs text-muted sm:flex-row sm:px-8">
+      <div className="mx-auto flex max-w-[1400px] flex-col justify-between gap-2 px-4 py-8 text-sm text-muted sm:flex-row sm:px-8">
         <span>© {new Date().getFullYear()} Asgorithm Technologies</span>
         <span className="font-mono tracking-wider uppercase">Engineered in Coimbatore</span>
       </div>

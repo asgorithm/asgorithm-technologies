@@ -16,7 +16,7 @@ export function Method() {
           >
             <span className="font-serif text-2xl text-dim italic transition-colors group-hover:text-signal">{s.n}</span>
             <h3 className="mt-16 text-3xl font-light tracking-tight">{s.title}</h3>
-            <p className="mt-3 text-lg leading-relaxed text-muted">{s.body}</p>
+            <p className="mt-3 text-xl leading-relaxed text-muted">{s.body}</p>
           </div>
         ))}
       </div>

@@ -10,7 +10,7 @@ export function Hero() {
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-ink to-transparent" />
 
       <div className="relative mx-auto w-full max-w-[1400px] px-4 pb-28 sm:px-8 sm:pb-32">
-        <p className="rise mb-8 flex items-center gap-3 font-mono text-[13px] tracking-wider text-muted uppercase">
+        <p className="rise mb-8 flex items-center gap-3 font-mono text-sm tracking-wider text-muted uppercase">
           <span className="h-1.5 w-1.5 rounded-full bg-signal animate-pulse-dot" />
           Engineering studio · Coimbatore, India
         </p>
@@ -22,7 +22,7 @@ export function Hero() {
         </h1>
         <div className="mt-10 flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
           <p
-            className="rise max-w-lg text-xl leading-relaxed text-muted"
+            className="rise max-w-lg text-2xl leading-relaxed text-muted"
             style={{ "--delay": "450ms" } as React.CSSProperties}
           >
             AI, blockchain and high-performance software, built with the care of a product and the rigour
@@ -31,13 +31,13 @@ export function Hero() {
           <div className="rise flex gap-3" style={{ "--delay": "600ms" } as React.CSSProperties}>
             <a
               href="#contact"
-              className="rounded-full bg-fg px-6 py-4 text-base font-medium text-ink transition-colors hover:bg-signal"
+              className="rounded-full bg-fg px-6 py-4 text-lg font-medium text-ink transition-colors hover:bg-signal"
             >
               Start a project
             </a>
             <a
               href="#work"
-              className="rounded-full border border-line px-6 py-4 text-base text-fg transition-colors hover:border-fg"
+              className="rounded-full border border-line px-6 py-4 text-lg text-fg transition-colors hover:border-fg"
             >
               See our work
             </a>
@@ -45,7 +45,7 @@ export function Hero() {
         </div>
       </div>
 
-      <div className="absolute inset-x-0 bottom-6 mx-auto flex max-w-[1400px] items-center justify-between px-4 font-mono text-[13px] tracking-wider text-dim uppercase sm:px-8">
+      <div className="absolute inset-x-0 bottom-6 mx-auto flex max-w-[1400px] items-center justify-between px-4 font-mono text-sm tracking-wider text-dim uppercase sm:px-8">
         <span className="flex items-center gap-3">
           Scroll <span className="block h-6 w-px bg-muted animate-scroll-line" />
         </span>

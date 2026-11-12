@@ -45,22 +45,22 @@ export const capabilities: Capability[] = [
   {
     name: "AI Systems",
     desc: "Agents, copilots, retrieval and memory, and LLM workflows that do real work in production.",
-    href: "/ai-systems.html",
+    href: "/services/ai-systems",
   },
   {
     name: "Blockchain Systems",
     desc: "Private chains, smart contracts, wallets and tokenised infrastructure, built for real operations.",
-    href: "/blockchain-systems.html",
+    href: "/services/blockchain-systems",
   },
   {
     name: "Advanced Systems",
     desc: "Go and Rust backends, realtime platforms, payments, billing and observability, built for scale.",
-    href: "/advanced-systems.html",
+    href: "/services/advanced-systems",
   },
   {
     name: "Content Systems",
     desc: "Programmable publishing, AI-assisted media pipelines and technical storytelling for founders.",
-    href: "/content-systems.html",
+    href: "/services/content-systems",
   },
 ];
 

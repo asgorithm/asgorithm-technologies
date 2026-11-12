@@ -38,7 +38,7 @@ export function PitchVisual() {
           />
         </div>
       </div>
-      <div className="absolute inset-x-0 bottom-6 flex justify-center gap-6 font-mono text-[13px] tracking-widest text-muted uppercase">
+      <div className="absolute inset-x-0 bottom-6 flex justify-center gap-6 font-mono text-sm tracking-widest text-muted uppercase">
         <span>1v1 Face-off</span>
         <span className="text-signal">Split 70 / 30</span>
         <span>Auto-settled</span>
@@ -72,7 +72,7 @@ export function CompassVisual() {
           ["S", "bottom-[3%] left-1/2 -translate-x-1/2"],
           ["W", "left-[3%] top-1/2 -translate-y-1/2"],
         ].map(([l, pos]) => (
-          <span key={l} className={`absolute font-mono text-[13px] text-muted ${pos}`}>
+          <span key={l} className={`absolute font-mono text-sm text-muted ${pos}`}>
             {l}
           </span>
         ))}
@@ -83,7 +83,7 @@ export function CompassVisual() {
             <div className="h-1 w-full overflow-hidden rounded-full bg-fg/10">
               <div className={`h-full ${v.c}`} style={{ width: v.w }} />
             </div>
-            <span className="mt-2 block font-mono text-[13px] tracking-widest text-muted uppercase">{v.label}</span>
+            <span className="mt-2 block font-mono text-sm tracking-widest text-muted uppercase">{v.label}</span>
           </div>
         ))}
       </div>
