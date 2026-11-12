@@ -1,0 +1,163 @@
+# asgorithm.com: the static marketing site.
+#
+# Its own namespace, separate from `asgorithm` (the app compromised on
+# 2026-08-20). Nothing here holds a secret, talks to a database or calls the
+# API server, and the manifests enforce that.
+#
+#   docker build -t localhost:5000/asgorithm-site:<tag> .
+#   docker push  localhost:5000/asgorithm-site:<tag>
+#   # set the image below (prefer @sha256 digest from the push output), then:
+#   kubectl apply -f k8s/site.yaml
+#   kubectl -n asgorithm-site rollout status deploy/site
+#
+# CUTOVER: the `asgorithm-web` Ingress in namespace `asgorithm` still claims
+# asgorithm.com and www.asgorithm.com. Delete it (or its rules) when this goes
+# live, or the two Ingresses will fight over the hosts.
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: asgorithm-site
+  labels:
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/enforce-version: latest
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: site
+  namespace: asgorithm-site
+automountServiceAccountToken: false
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: site
+  namespace: asgorithm-site
+spec:
+  selector:
+    app: site
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: site
+  namespace: asgorithm-site
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: site
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: site
+    spec:
+      serviceAccountName: site
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        runAsGroup: 101
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: site
+          image: localhost:5000/asgorithm-site:0.1.0   # pin by @sha256 digest after push
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              name: http
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 250m
+              memory: 128Mi
+          readinessProbe:
+            httpGet: {path: /healthz, port: 8080}
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: {path: /healthz, port: 8080}
+            periodSeconds: 20
+          volumeMounts:
+            # nginx needs somewhere writable for its pid file and temp buffers.
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir:
+            sizeLimit: 64Mi
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: site
+  namespace: asgorithm-site
+  annotations:
+    # TLS terminates at Caddy in front of the cluster, as for the other apps.
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/proxy-body-size: "1k"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: asgorithm.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: {name: site, port: {number: 80}}
+    - host: www.asgorithm.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: {name: site, port: {number: 80}}
+---
+# Default-deny, then allow only ingress-nginx in. No egress at all: a static
+# file server has no reason to open a connection to anything.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: asgorithm-site
+spec:
+  podSelector: {}
+  policyTypes: [Ingress, Egress]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: site-ingress-from-nginx
+  namespace: asgorithm-site
+spec:
+  podSelector:
+    matchLabels:
+      app: site
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx
+      ports:
+        - {protocol: TCP, port: 8080}

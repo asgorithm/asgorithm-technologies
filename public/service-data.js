@@ -35,7 +35,7 @@ window.ASGORITHM_DATA = {
       excerpt:
         "Hospitality AI has moved from rigid chatbot flows into adaptive systems that personalize guest experiences, automate support, optimize pricing, and coordinate full travel journeys.",
       markdown: "case-studies/ai-in-hospitality.md",
-      cover: "public/case-studies/hospitality /1.png",
+      cover: "public/case-studies/hospitality/1.png",
       theme: "orange"
     },
     {

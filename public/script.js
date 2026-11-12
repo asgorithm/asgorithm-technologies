@@ -421,7 +421,7 @@ function normalizeMarkdownAssetPath(src) {
   }
 
   if (src.startsWith("/case-studies/hospitality/")) {
-    return `public/case-studies/hospitality /${src.split("/").pop()}`;
+    return `public/case-studies/hospitality/${src.split("/").pop()}`;
   }
 
   if (src.startsWith("/case-studies/")) {
