@@ -74,7 +74,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: site
-          image: localhost:5000/asgorithm-site:0.1.0   # pin by @sha256 digest after push
+          image: localhost:5000/asgorithm-site:0.1.1@sha256:ae5bc7791374de8e4b77e93d142d8e190c3f54d4fe8f8880a9ac1cc05ab3f9f1
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
