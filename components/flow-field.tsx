@@ -23,7 +23,7 @@ export function FlowField() {
     let visible = true;
     let t = 0;
     const mouse = { x: -9999, y: -9999, active: false, power: 0 };
-    const VORTEX_R2 = 300 * 300;
+    const VORTEX_R2 = 220 * 220;
 
     type P = { x: number; y: number; px: number; py: number; life: number; hue: 0 | 1 | 2; hot?: boolean; skip?: boolean };
     let ps: P[] = [];
@@ -49,7 +49,7 @@ export function FlowField() {
         `rgba(${rgb("--color-signal")},${light ? 0.6 : 0.75})`,
         `rgba(${rgb("--color-azure")},${light ? 0.55 : 0.65})`,
       ];
-      hot = `rgba(${rgb("--color-signal")},${light ? 0.85 : 0.95})`;
+      hot = `rgba(${rgb("--color-fg")},${light ? 0.38 : 0.5})`;
     };
     readPalette();
 
@@ -109,11 +109,11 @@ export function FlowField() {
           const dy = p.y - mouse.y;
           const d2 = dx * dx + dy * dy;
           if (d2 < VORTEX_R2) {
-            const k = (1 - d2 / VORTEX_R2) * mouse.power;
-            // Swirl around the cursor with a slight inward pull.
-            a = a * (1 - k) + (Math.atan2(dy, dx) + Math.PI / 2 + 0.35) * k;
-            speed += k * 2.2;
-            p.hot = k > 0.18;
+            const k = (1 - d2 / VORTEX_R2) * mouse.power * 0.45;
+            // A gentle bend around the cursor: a distortion, not a takeover.
+            a = a * (1 - k) + (Math.atan2(dy, dx) + Math.PI / 2) * k;
+            speed += k * 0.5;
+            p.hot = k > 0.12;
           }
         }
         p.px = p.x;
@@ -131,7 +131,7 @@ export function FlowField() {
 
       for (let pass = 0; pass < 4; pass++) {
         ctx.strokeStyle = pass === 3 ? hot : colors[pass];
-        ctx.lineWidth = pass === 3 ? 1.3 : 0.8;
+        ctx.lineWidth = pass === 3 ? 0.9 : 0.8;
         ctx.beginPath();
         for (const p of ps) {
           if (p.skip || (pass === 3 ? !p.hot : p.hot || p.hue !== pass)) continue;
