@@ -1,0 +1,287 @@
+[
+  {
+    "slug": "ai-systems",
+    "key": "ai",
+    "title": "AI Systems",
+    "theme": "orange",
+    "summary": "Intelligent automation, copilots, workflows, assistants, and AI-driven platforms designed for modern businesses.",
+    "heroSubtext": "We build intelligent applications, assistants, workflows, and memory-powered systems for companies that want to operate faster with AI.",
+    "overview": "Asgorithm designs and builds AI systems that help teams automate workflows, interact with data, create intelligent interfaces, and deploy AI-powered products into real business environments.",
+    "whatWeBuild": [
+      "AI chat interfaces",
+      "Audio AI interfaces",
+      "Agentic workflow builders",
+      "Memory databases",
+      "RAG systems",
+      "Internal copilots",
+      "AI dashboards",
+      "Workflow automation systems"
+    ],
+    "products": [
+      {
+        "title": "Asgorithm AI",
+        "description": "A premium AI chat interface for internal teams, customers, research workflows, and business operations.",
+        "image": "/public/ai/chatbot.png",
+        "capabilities": [
+          "Conversation orchestration",
+          "Internal knowledge retrieval",
+          "Context-aware workflows",
+          "Actionable insight generation"
+        ]
+      },
+      {
+        "title": "Asgorithm Voice",
+        "description": "A voice-based AI interface for real-time audio interactions, transcription, memory, and intelligent conversations.",
+        "image": "/public/ai/voice.png",
+        "capabilities": [
+          "Realtime audio interaction",
+          "Transcription and summarization",
+          "Voice memory layers",
+          "Agent handoff workflows"
+        ]
+      },
+      {
+        "title": "Asgorithm Agents",
+        "description": "A visual workflow builder for creating agentic systems, automations, tool integrations, and multi-step AI operations.",
+        "image": "/public/ai/agents.png",
+        "capabilities": [
+          "Visual orchestration",
+          "Tool integrations",
+          "Multi-agent control",
+          "Operational automation"
+        ]
+      },
+      {
+        "title": "Asgorithm Mem DB",
+        "description": "A semantic memory database for storing, retrieving, and organizing long-term AI context across products and workflows.",
+        "image": "/public/ai/memory.png",
+        "capabilities": [
+          "Semantic memory retrieval",
+          "Cross-session context",
+          "RAG-ready storage",
+          "Knowledge organization"
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "blockchain-systems",
+    "key": "blockchain",
+    "title": "Blockchain Systems",
+    "theme": "blue",
+    "summary": "Private chains, tokenized infrastructure, smart contracts, wallets, and scalable decentralized systems.",
+    "heroSubtext": "We build blockchain infrastructure, private networks, wallets, smart contract systems, explorers, and exchange platforms for modern digital businesses.",
+    "overview": "Asgorithm builds blockchain systems with a focus on infrastructure, security, operational reliability, and real business use cases.",
+    "whatWeBuild": [
+      "Private blockchain deployment tools",
+      "Wallet systems",
+      "Smart contract builders",
+      "Smart contract deployment tools",
+      "Blockchain explorers",
+      "Centralized exchange systems",
+      "Decentralized exchange systems",
+      "Tokenized infrastructure",
+      "Node and validator dashboards"
+    ],
+    "products": [
+      {
+        "title": "Asgorithm Blockchain Engine",
+        "description": "A private blockchain deployment and management platform for launching, operating, and monitoring blockchain networks.",
+        "image": "/public/blockchain/blockchain-engine.png",
+        "capabilities": [
+          "Private chain deployment",
+          "Validator management",
+          "Operational monitoring",
+          "Infrastructure governance"
+        ]
+      },
+      {
+        "title": "Asgorithm Wallet",
+        "description": "A secure multi-chain wallet interface for asset management, transaction signing, identity, and user operations.",
+        "image": "/public/blockchain/wallet.png",
+        "capabilities": [
+          "Transaction signing",
+          "Asset management",
+          "Multi-chain compatibility",
+          "Identity flows"
+        ]
+      },
+      {
+        "title": "Asgorithm Contract Builder",
+        "description": "A smart contract builder and deployment platform for writing, verifying, auditing, and deploying contracts.",
+        "image": "/public/blockchain/smartcontract.png",
+        "capabilities": [
+          "Contract authoring",
+          "Verification workflows",
+          "Deployment pipelines",
+          "Audit preparation"
+        ]
+      },
+      {
+        "title": "Asgorithm Blockchain Explorer",
+        "description": "A blockchain explorer for monitoring blocks, transactions, validators, smart contracts, and network activity.",
+        "image": "/public/blockchain/explorer.png",
+        "capabilities": [
+          "Network activity views",
+          "Validator inspection",
+          "Contract lookup",
+          "Transaction tracing"
+        ]
+      },
+      {
+        "title": "Asgorithm CEX",
+        "description": "A centralized exchange platform interface for trading, liquidity, order books, portfolio management, and institutional exchange operations.",
+        "image": "/public/blockchain/Cex.png",
+        "capabilities": [
+          "Order book operations",
+          "Portfolio management",
+          "Liquidity views",
+          "Institutional workflows"
+        ]
+      },
+      {
+        "title": "Asgorithm DEX",
+        "description": "A decentralized exchange interface for token swaps, liquidity pools, AMM systems, routing, and protocol analytics.",
+        "image": "/public/blockchain/dex.png",
+        "capabilities": [
+          "AMM interfaces",
+          "Routing optimization",
+          "Liquidity pool views",
+          "Protocol analytics"
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "advanced-systems",
+    "key": "advanced",
+    "title": "Advanced Systems",
+    "theme": "purple",
+    "summary": "Backend platforms, Rust systems, APIs, realtime infrastructure, and scalable software architecture.",
+    "heroSubtext": "We build backend platforms, monitoring systems, mobile applications, embedded systems interfaces, and production-grade software infrastructure.",
+    "overview": "Asgorithm develops advanced software systems for businesses that need reliable infrastructure, high-performance backend platforms, and operationally mature products.",
+    "whatWeBuild": [
+      "Backend API monitoring platforms",
+      "Payment mobile apps",
+      "Billing and invoicing apps",
+      "Embedded systems monitoring platforms",
+      "Rust backend services",
+      "Realtime dashboards",
+      "Infrastructure tools",
+      "Production-grade APIs",
+      "Operational software systems"
+    ],
+    "products": [
+      {
+        "title": "Asgorithm API Monitor",
+        "description": "A backend observability and API monitoring platform for tracking requests, latency, uptime, errors, logs, and infrastructure health.",
+        "image": "/public/Advanced/api.png",
+        "capabilities": [
+          "Request and latency monitoring",
+          "Topology visibility",
+          "Alerting and error traces",
+          "Infrastructure health dashboards"
+        ]
+      },
+      {
+        "title": "Asgorithm Pay",
+        "description": "A premium fintech payment app interface for transfers, QR payments, card management, transactions, and secure mobile payment workflows.",
+        "image": "/public/Advanced/pay.png",
+        "capabilities": [
+          "Mobile payment flows",
+          "Secure transaction UX",
+          "Card and wallet management",
+          "Realtime account actions"
+        ]
+      },
+      {
+        "title": "Asgorithm Biller",
+        "description": "A billing and invoicing mobile app for managing invoices, payments, subscriptions, expenses, reports, and financial workflows.",
+        "image": "/public/Advanced/biller.png",
+        "capabilities": [
+          "Invoice creation",
+          "Subscription management",
+          "Expense tracking",
+          "Financial reporting"
+        ]
+      },
+      {
+        "title": "Asgorithm Observer",
+        "description": "An embedded systems monitoring platform for tracking device health, sensor data, edge infrastructure, firmware, and operational telemetry.",
+        "image": "/public/Advanced/observer.png",
+        "capabilities": [
+          "Device health monitoring",
+          "Sensor telemetry dashboards",
+          "Firmware observability",
+          "Edge infrastructure views"
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "content-systems",
+    "key": "content",
+    "title": "Content Systems",
+    "theme": "darkened",
+    "summary": "AI-assisted storytelling, media workflows, founder content systems, and technical communication infrastructure.",
+    "heroSubtext": "We build AI-assisted content platforms, media workflows, founder content systems, and technical storytelling infrastructure for modern brands.",
+    "overview": "Asgorithm helps companies turn content into a repeatable system by combining AI, strategy, storytelling, scheduling, and production workflows.",
+    "whatWeBuild": [
+      "Content calendar platforms",
+      "AI avatar systems",
+      "AI image generation platforms",
+      "Twitter/X post generation systems",
+      "Founder content workflows",
+      "Technical storytelling systems",
+      "Brand voice memory",
+      "Campaign planning tools",
+      "Multi-platform publishing systems"
+    ],
+    "products": [
+      {
+        "title": "Content Calendar",
+        "description": "A content planning and publishing platform for campaigns, social media scheduling, editorial workflows, and team collaboration.",
+        "image": "/public/content/calender.png",
+        "capabilities": [
+          "Campaign planning",
+          "Editorial workflows",
+          "Publishing schedules",
+          "Cross-channel visibility"
+        ]
+      },
+      {
+        "title": "AI Avatar Studio",
+        "description": "An AI avatar creation platform for generating videos, voice-synced content, brand presenters, and scalable media workflows.",
+        "image": "/public/content/aiavatar.png",
+        "capabilities": [
+          "Avatar generation",
+          "Voice sync workflows",
+          "Scalable media output",
+          "Brand presenter systems"
+        ]
+      },
+      {
+        "title": "Asgorithm Studio",
+        "description": "An AI image generation and model fine-tuning platform for brand assets, campaign visuals, image generation, and creative workflows.",
+        "image": "/public/content/studio.png",
+        "capabilities": [
+          "Brand image generation",
+          "Creative model workflows",
+          "Campaign asset production",
+          "Fine-tuned visual systems"
+        ]
+      },
+      {
+        "title": "Twitter Post Generator",
+        "description": "An AI-powered writing platform for founders and companies to create posts, threads, brand voice content, and scheduled social media workflows.",
+        "image": "/public/content/tweet.png",
+        "capabilities": [
+          "Founder voice generation",
+          "Thread composition",
+          "Brand tone control",
+          "Publishing-ready drafts"
+        ]
+      }
+    ]
+  }
+]
